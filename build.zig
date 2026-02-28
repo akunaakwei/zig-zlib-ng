@@ -111,16 +111,12 @@ pub fn build(b: *std.Build) void {
             .files = &gzfile_sources,
             .flags = &flags,
         });
-        const gzread_c = b.addConfigHeader(.{ .style = .{
-            .autoconf_at = zlib_ng_dep.path("gzread.c.in"),
+        const gzread_h = b.addConfigHeader(.{ .style = .{
+            .autoconf_at = zlib_ng_dep.path("gzread_mangle.h.in"),
         } }, .{
             .ZLIB_SYMBOL_PREFIX = zlib_symbol_prefix,
         });
-        zlib_ng.addCSourceFile(.{
-            .file = gzread_c.getOutputFile(),
-            .flags = &flags,
-            .language = .c,
-        });
+        zlib_ng.addConfigHeader(gzread_h);
     }
     if (with_all_fallbacks) {
         zlib_ng.root_module.addCMacro("WITH_ALL_FALLBACKS", "1");
@@ -315,6 +311,7 @@ const zlib_sources = .{
 const gzfile_sources = .{
     "gzlib.c",
     "gzwrite.c",
+    "gzread.c",
 };
 
 const fallback_sources = .{
